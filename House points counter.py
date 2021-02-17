@@ -1,5 +1,7 @@
 import os
 import datetime
+from collections import defaultdict
+from collections import deque
 
 houses= ["Asgard","Valhalla","Wakanda","Xandar"] 
 
@@ -103,6 +105,19 @@ for x in range (4):
         overall.append(npoint)
         print(" ")
         print(f"this week {houses[x]} total points is {npoint}")
+
+        
+d = defaultdict(deque)
+for i, x in enumerate(sorted(current_points, reverse = True)):
+    d[x].append(i)
+
+result = [d[x].popleft() for x in current_points]
+
+print(f"The rank of Asgard: {result[0]}")
+print(f"The rank of Valhalla: {result[1]}")
+print(f"The rank of Wakanda: {result[2]}")
+print(f"The rank of Xandar: {result[3]}")
+        
 
 
 file = open("house points data.txt", "w")
