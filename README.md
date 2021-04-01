@@ -1,6 +1,6 @@
 # house-points-counter- A program to ease the calculations of the house points
  
- import os
+import os
 import datetime
 from collections import defaultdict
 import smtplib
