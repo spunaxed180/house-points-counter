@@ -4,8 +4,13 @@ from collections import defaultdict
 import smtplib
 from email.mime.text import MIMEText
 from collections import deque
+from email.mime.multipart import MIMEMultipart
+import sys
+
+
 
 houses = ["Asgard", "Valhalla", "Wakanda", "Xandar"]
+inputtedpoints = []
 
 file = open("house points data.txt", "a")
 file.write("")
@@ -21,18 +26,37 @@ if size == 0:
                 points = float(input(f"please enter the current points of {houses[i]}: "))
                 confirmation = input("are you sure you inputted the correct points? yes/no ")
                 if confirmation == "yes":
+                    inputtedpoints.append(points)
                     break
+        else:
+            inputtedpoints.append(points)
+
+    for i in range (len(houses)):
         file = open("house points data.txt", "a")
         file.write(f"{houses[i]}:")
-        file.write(f"\n{points}")
+        file.write(f"\n{inputtedpoints[i]}")
         file.write("\n")
         file.close()
-
+else:
+    reset = str(input(" press r to reset points"))
+    if reset == "r" or reset == "R":
+        while True:
+            confirm = str(input("type reset to reset points"))
+            if confirm == "reset":
+                os.remove("house points data.txt")
+                sys.exit()
+                break
+            else:
+                print("points reset cancelled, rerun the program to reset")
+                break
+    else:
+        pass
+        
 now = datetime.datetime.now()
 Date = now.strftime("%Y-%m-%d %H:%M:%S")
 overall = []
 pointindex = []
-new_points = []  #
+new_points = []  
 current_points = []
 
 print(" ")
@@ -103,15 +127,14 @@ for x in range(4):
     print(f"this week {houses[x]} total points is {npoint}")
 
 d = defaultdict(deque)
-for i, x in enumerate(sorted(current_points, reverse=True)):
+for i, x in enumerate(sorted(overall, reverse=True)):
     d[x].append(i)
 
-result = [d[x].popleft() for x in current_points]
+result = [d[x].popleft() for x in overall]
 
-print(f"The rank of Asgard: {result[0]}")
-print(f"The rank of Valhalla: {result[1]}")
-print(f"The rank of Wakanda: {result[2]}")
-print(f"The rank of Xandar: {result[3]}")
+rank = (f"\n The rank of Asgard: {result[0]} \n The rank of Valhalla: {result[1]} \n The rank of Wakanda: {result[2]} \n The rank of Xandar: {result[3]}")
+
+print(rank)
 
 file = open("house points data.txt", "w")
 
@@ -120,16 +143,39 @@ for i in range(4):
     file.write(f"\n{overall[i]}")
     file.write("\n")
 
-file.write("\n\n\n")
+file.write("\n")
 file.write(f"last updated on {Date}")
+file.close()
+
+# reading data
+file = open("house points data.txt", "r")
+data = file.read()
 file.close()
 
 # email part of the file
 # contacts = ["secondary.1.students@sis-semarang.org", "secondary.2.students@sis-semarang.org","secondary.3.students@sis-semarang.org", "secondary.4.students@sis-semarang.org", "jc1.students@sis-semarang.org", "jc2.students@sis-semarang.org"]
+contacts = ["tan.michael@sis-semarang.org", "akilesh.sivaraj@sis-semarang.org"]
+bx = len(contacts)
+
+sender = "kartik.nayak@sis-semarang.org"
 mailserver = smtplib.SMTP('smtp.gmail.com', 587)
 mailserver.starttls()
-mailserver.login("kartik.nayak@sis-semarang.org", "karnayak")
-x = input("Hello everyone, here is the new update on our House Games points.")
-for i in range(len(contacts)):
-    mailserver.sendmail("kartik.nayak@sis-semarang.org", x)
-mailserver.sendmail("kartik.nayak@sis-semarang.org", "tan.michael@sis-semarang.org", x)
+mailserver.login(sender, "karnayak")
+
+msg = MIMEMultipart()
+msg["From"] = sender
+msg["To"] = ",".join(contacts)
+msg["Subject"] = "House Points info"
+
+msg.attach(MIMEText(data, 'plain'))
+msg.attach(MIMEText(rank, 'plain'))
+
+qna = str(input(" any message/announcement to share? yes/no"))
+if qna == "yes":
+    note = str(input(" enter your message: "))
+    note = f"\n\n{note}"
+    msg.attach(MIMEText(note, 'plain'))
+else:
+    pass
+
+mailserver.sendmail(sender, contacts, msg.as_string())
