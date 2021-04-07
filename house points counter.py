@@ -155,10 +155,10 @@ file.close()
 contacts = ["secondary.1.students@sis-semarang.org", "secondary.2.students@sis-semarang.org","secondary.3.students@sis-semarang.org", "secondary.4.students@sis-semarang.org", "jc1.students@sis-semarang.org", "jc2.students@sis-semarang.org", "secondary.teacher@sis-semarang.org"]
 
 
-sender = "kartik.nayak@sis-semarang.org"
+sender = "ka@###8828.nz"
 mailserver = smtplib.SMTP('smtp.gmail.com', 587)
 mailserver.starttls()
-mailserver.login(sender, "karnayak")
+mailserver.login(sender, "ask owner")
 
 msg = MIMEMultipart()
 msg["From"] = sender
