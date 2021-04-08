@@ -6,6 +6,7 @@ from email.mime.text import MIMEText
 from collections import deque
 from email.mime.multipart import MIMEMultipart
 import sys
+import time
 
 houses = ["Asgard", "Valhalla", "Wakanda", "Xandar"]
 inputtedpoints = []
@@ -42,6 +43,8 @@ else:
             confirm = str(input("type reset to reset points"))
             if confirm == "reset":
                 os.remove("house points data.txt")
+                print("re-run the program to input new points")
+                time.sleep(5)
                 sys.exit()
                 break
             else:
@@ -177,3 +180,4 @@ else:
     pass
 
 mailserver.sendmail(sender, contacts, msg.as_string())
+print(" \n data sent!")
