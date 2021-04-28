@@ -1,15 +1,23 @@
 import os
 import datetime
 from collections import defaultdict
+import socket
 import smtplib
 from email.mime.text import MIMEText
 from collections import deque
 from email.mime.multipart import MIMEMultipart
 import sys
+import urllib.request
 import time
 
 houses = ["Asgard", "Valhalla", "Wakanda", "Xandar"]
 inputtedpoints = []
+
+    
+print("please be connected to the internet")
+print("")
+
+
 
 file = open("house points data.txt", "a")
 file.write("")
@@ -19,12 +27,14 @@ if size == 0:
     print("this is your first time running the program")
     for i in range(len(houses)):
         points = float(input(f"please enter the current points of {houses[i]}: "))
-        confirmation = input("are you sure you inputted the correct points? yes/no ")
-        if confirmation != "yes":
+        confirmation = input("are you sure you inputted the correct points? y/n: ")
+        while confirmation != "y" and confirmation != "n":
+            confirmation=input("That is not a valid input, please try again")
+        if confirmation != "y":
             while True:
                 points = float(input(f"please enter the current points of {houses[i]}: "))
-                confirmation = input("are you sure you inputted the correct points? yes/no ")
-                if confirmation == "yes":
+                confirmation = input("are you sure you inputted the correct points? y/n: ")
+                if confirmation == "y":
                     inputtedpoints.append(points)
                     break
         else:
@@ -37,10 +47,10 @@ if size == 0:
         file.write("\n")
         file.close()
 else:
-    reset = str(input(" press r to reset points, press enter to continue "))
+    reset = str(input("press r to reset points, press enter to continue: "))
     if reset == "r" or reset == "R":
         while True:
-            confirm = str(input("type reset to reset points"))
+            confirm = str(input("type reset to reset points: "))
             if confirm == "reset":
                 os.remove("house points data.txt")
                 print("re-run the program to input new points")
@@ -63,50 +73,48 @@ current_points = []
 print(" ")
 while True:
     try:
-        new_points.append(float(input("Enter the number of points that Asgard got this week")))
+        new_points.append(float(input("Enter the number of points that Asgard got this week: ")))
     except ValueError:
         print("I am sorry that is an incorrect value, please try again")
         continue
-    print(new_points)
-    Verification = str(input("Are you sure that the point/points entered are correct? yes/no"))
-    if (Verification == "yes"):
+    Verification = str(input("Are you sure that the point/points entered are correct? y/n: "))
+    if (Verification == "y"):
         break
     else:
         del new_points[0]
         continue
-    print(new_points)
 while True:
     try:
-        new_points.append(float(input("Enter the number of points that Valhalla got this week")))
+        new_points.append(float(input("Enter the number of points that Valhalla got this week: ")))
     except ValueError:
         print("I am sorry that is an incorrect value, please try again")
         continue
-    Verification = str(input("Are you sure that the point/points entered are correct? yes/no"))
-    if (Verification == "yes"):
+    Verification = str(input("Are you sure that the point/points entered are correct? y/n: "))
+    if (Verification == "y"):
         break
     else:
         del new_points[1]
         continue
 while True:
     try:
-        new_points.append(float(input("Enter the number of points that Wakanda got this week")))
+        new_points.append(float(input("Enter the number of points that Wakanda got this week: ")))
     except ValueError:
         print("I am sorry that is an incorrect value, please try again")
         continue
-    Verification = str(input("Are you sure that the point/points entered are correct? yes/no"))
-    if (Verification == "yes"):
+    Verification = str(input("Are you sure that the point/points entered are correct? y/n: "))
+    if (Verification == "y"):
         break
     else:
         del new_points[2]
         continue
 while True:
     try:
-        new_points.append(float(input("Enter the number of points that Xandar got this week")))
+        new_points.append(float(input("Enter the number of points that Xandar got this week: ")))
     except ValueError:
         print("I am sorry that is an incorrect value, please try again")
         continue
-    Verification = str(input("Are you sure that the point/points entered are correct? yes/no"))
-    if (Verification == "yes"):
+    Verification = str(input("Are you sure that the point/points entered are correct? y/n: "))
+    if (Verification == "y"):
         break
     else:
         del new_points[3]
@@ -138,6 +146,21 @@ rank = (
 
 print(rank)
 
+
+
+try:
+    sender = "publicbetaprogram@gmail.com"
+    mailserver = smtplib.SMTP('smtp.gmail.com', 587)
+    mailserver.starttls()
+    mailserver.login(sender, "publicbeta")
+
+except socket.gaierror:
+    print("cannot connect to email server, points you enter will not be updated")
+    print("please make sure that you are connected to the internet")
+    print("contact the programming club if you keep receiving this error")
+    time.sleep(5)
+    sys.exit()
+
 file = open("house points data.txt", "w")
 
 for i in range(4):
@@ -158,10 +181,7 @@ file.close()
 contacts = ["secondary.1.students@sis-semarang.org", "secondary.2.students@sis-semarang.org","secondary.3.students@sis-semarang.org", "secondary.4.students@sis-semarang.org", "jc1.students@sis-semarang.org", "jc2.students@sis-semarang.org", "secondary.teacher@sis-semarang.org"]
 
 
-sender = "ka@###8828.nz"
-mailserver = smtplib.SMTP('smtp.gmail.com', 587)
-mailserver.starttls()
-mailserver.login(sender, "ask owner")
+
 
 msg = MIMEMultipart()
 msg["From"] = sender
@@ -171,9 +191,20 @@ msg["Subject"] = "House Points info"
 msg.attach(MIMEText(data, 'plain'))
 msg.attach(MIMEText(rank, 'plain'))
 
-qna = str(input(" any message/announcement to share? yes/no"))
-if qna == "yes":
+qna = str(input(" any message/announcement to share? y/n: "))
+if qna == "y":
     note = str(input(" enter your message (short message only): "))
+    
+    if len(note) > 150:
+        while True:
+            note = str(input(" your message is to long, re enter your message (short message only): "))
+            if len(note) < 150:
+                note = f"\n\n{note}"
+                break
+            else:
+                continue
+            
+        
     note = f"\n\n{note}"
     msg.attach(MIMEText(note, 'plain'))
 else:
